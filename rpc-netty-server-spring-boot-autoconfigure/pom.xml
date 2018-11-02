@@ -6,9 +6,9 @@
     <artifactId>rpc-netty-server-spring-boot-autoconfigure</artifactId>
 
     <parent>
-        <groupId>com.linshen</groupId>
+        <groupId>com.github.linshenkx</groupId>
         <artifactId>rpc-netty-spring-boot-starter</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0.RELEASE</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -22,7 +22,7 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.linshen</groupId>
+            <groupId>com.github.linshenkx</groupId>
             <artifactId>rpc-netty-common</artifactId>
         </dependency>
         <dependency>

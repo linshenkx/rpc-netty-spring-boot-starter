@@ -6,15 +6,15 @@
     <artifactId>rpc-netty-client-spring-boot-starter</artifactId>
 
     <parent>
-        <groupId>com.linshen</groupId>
+        <groupId>com.github.linshenkx</groupId>
         <artifactId>rpc-netty-spring-boot-starter</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0.RELEASE</version>
         <relativePath>../</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>com.linshen</groupId>
+            <groupId>com.github.linshenkx</groupId>
             <artifactId>rpc-netty-client-spring-boot-autoconfigure</artifactId>
         </dependency>
     </dependencies>

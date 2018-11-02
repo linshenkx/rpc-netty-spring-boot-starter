@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.linshen</groupId>
+    <groupId>com.github.linshenkx</groupId>
     <artifactId>rpc-netty-spring-boot-starter</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0.RELEASE</version>
     <packaging>pom</packaging>
 
     <name>rpc-netty-spring-boot-starter</name>
@@ -16,7 +16,6 @@
         <version>2.1.0.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,6 +40,28 @@
         <module>examples</module>
     </modules>
 
+    <developers>
+        <developer>
+            <name>LinShen</name>
+            <email>1558867741@qq.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:https://github.com/linshenkx/rpc-netty-spring-boot-starter</connection>
+        <developerConnection>scm:git:git@github.com/linshenkx/rpc-netty-spring-boot-starter.git</developerConnection>
+        <url>https://github.com/linshenkx/rpc-netty-spring-boot-starterr</url>
+        <tag>HEAD</tag>
+    </scm>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -52,17 +73,17 @@
             </dependency>
 
             <dependency>
-                <groupId>com.linshen</groupId>
+                <groupId>com.github.linshenkx</groupId>
                 <artifactId>rpc-netty-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.linshen</groupId>
+                <groupId>com.github.linshenkx</groupId>
                 <artifactId>rpc-netty-server-spring-boot-autoconfigure</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.linshen</groupId>
+                <groupId>com.github.linshenkx</groupId>
                 <artifactId>rpc-netty-client-spring-boot-autoconfigure</artifactId>
                 <version>${project.version}</version>
             </dependency>

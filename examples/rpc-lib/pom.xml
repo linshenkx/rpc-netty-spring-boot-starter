@@ -6,9 +6,9 @@
     <artifactId>rpc-lib</artifactId>
 
     <parent>
-        <groupId>com.linshen</groupId>
+        <groupId>com.github.linshenkx</groupId>
         <artifactId>examples</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0.RELEASE</version>
         <relativePath>../</relativePath>
     </parent>
 

@@ -7,9 +7,9 @@
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.linshen</groupId>
+        <groupId>com.github.linshenkx</groupId>
         <artifactId>rpc-netty-spring-boot-starter</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0.RELEASE</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -17,8 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <spring-boot.version>${project.parent.version}</spring-boot.version>
-        <rpc-netty-linshen.version>0.0.1-SNAPSHOT</rpc-netty-linshen.version>
+        <rpc-netty-linshen.version>${project.parent.version}</rpc-netty-linshen.version>
     </properties>
 
     <modules>
@@ -38,18 +37,18 @@
             </dependency>
             <!--公共grpc模块-->
             <dependency>
-                <groupId>com.linshen</groupId>
+                <groupId>com.github.linshenkx</groupId>
                 <artifactId>rpc-lib</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!--核心grpc-spring-boot依赖-->
+            <!--核心rpc-netty-spring-boot依赖-->
             <dependency>
-                <groupId>com.linshen</groupId>
+                <groupId>com.github.linshenkx</groupId>
                 <artifactId>rpc-netty-client-spring-boot-starter</artifactId>
                 <version>${rpc-netty-linshen.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.linshen</groupId>
+                <groupId>com.github.linshenkx</groupId>
                 <artifactId>rpc-netty-server-spring-boot-starter</artifactId>
                 <version>${rpc-netty-linshen.version}</version>
             </dependency>
