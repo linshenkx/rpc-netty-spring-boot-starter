@@ -1,0 +1,11 @@
+server:
+  port: 0
+zk:
+  addressList:
+    - 116.196.113.170:2181
+    - 116.196.113.170:2182
+    - 116.196.113.170:2183
+  connectTimeOut: 10000
+spring:
+  profiles:
+    active: slave1

@@ -1,0 +1,3 @@
+rpc:
+  server:
+    port: 9992
