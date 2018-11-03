@@ -6,15 +6,15 @@
     <artifactId>rpc-provider</artifactId>
 
     <parent>
-        <groupId>com.github.linshenkx</groupId>
-        <artifactId>examples</artifactId>
-        <version>1.0.0.RELEASE</version>
+        <groupId>com.github.linshenkx.test</groupId>
+        <artifactId>rpc-netty-spring-boot-starter-examples</artifactId>
+        <version>1.0.2.RELEASE</version>
         <relativePath>../</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>com.github.linshenkx</groupId>
+            <groupId>com.github.linshenkx.test</groupId>
             <artifactId>rpc-lib</artifactId>
         </dependency>
         <dependency>

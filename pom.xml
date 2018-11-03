@@ -5,7 +5,7 @@
 
     <groupId>com.github.linshenkx</groupId>
     <artifactId>rpc-netty-spring-boot-starter</artifactId>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.2.RELEASE</version>
     <packaging>pom</packaging>
 
     <name>rpc-netty-spring-boot-starter</name>
@@ -36,8 +36,6 @@
         <module>rpc-netty-server-spring-boot-starter</module>
         <module>rpc-netty-client-spring-boot-autoconfigure</module>
         <module>rpc-netty-client-spring-boot-starter</module>
-
-        <module>examples</module>
     </modules>
 
     <developers>
@@ -46,12 +44,23 @@
             <email>1558867741@qq.com</email>
         </developer>
     </developers>
+
     <scm>
         <connection>scm:git:https://github.com/linshenkx/rpc-netty-spring-boot-starter</connection>
         <developerConnection>scm:git:git@github.com/linshenkx/rpc-netty-spring-boot-starter.git</developerConnection>
         <url>https://github.com/linshenkx/rpc-netty-spring-boot-starterr</url>
         <tag>HEAD</tag>
     </scm>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
     <distributionManagement>
         <snapshotRepository>
             <!-- 这个id需要在setting.xml中设置  -->
@@ -67,16 +76,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
-
 
     <dependencyManagement>
         <dependencies>
