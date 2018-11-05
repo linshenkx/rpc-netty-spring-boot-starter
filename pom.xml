@@ -5,10 +5,13 @@
 
     <groupId>com.github.linshenkx</groupId>
     <artifactId>rpc-netty-spring-boot-starter</artifactId>
-    <version>1.0.2.RELEASE</version>
+    <version>1.0.3.RELEASE</version>
     <packaging>pom</packaging>
 
     <name>rpc-netty-spring-boot-starter</name>
+    <description>基于Netty的简易RPC框架</description>
+    <url>https://github.com/linshenkx/rpc-netty-spring-boot-starter</url>
+
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,12 +29,10 @@
         <netty.version>4.1.31.Final</netty.version>
         <protostuff.version>1.5.9</protostuff.version>
         <objenesis.version>3.0.1</objenesis.version>
-        <zookeeper.version>3.4.13</zookeeper.version>
         <zkclient.version>0.11</zkclient.version>
     </properties>
 
     <modules>
-        <module>rpc-netty-common</module>
         <module>rpc-netty-server-spring-boot-autoconfigure</module>
         <module>rpc-netty-server-spring-boot-starter</module>
         <module>rpc-netty-client-spring-boot-autoconfigure</module>
@@ -49,7 +50,7 @@
         <connection>scm:git:https://github.com/linshenkx/rpc-netty-spring-boot-starter</connection>
         <developerConnection>scm:git:git@github.com/linshenkx/rpc-netty-spring-boot-starter.git</developerConnection>
         <url>https://github.com/linshenkx/rpc-netty-spring-boot-starterr</url>
-        <tag>HEAD</tag>
+        <tag>master</tag>
     </scm>
 
     <licenses>
@@ -123,20 +124,15 @@
                 <version>${objenesis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
-                <version>${zookeeper.version}</version>
+                <groupId>com.101tec</groupId>
+                <artifactId>zkclient</artifactId>
+                <version>${zkclient.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-log4j12</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.101tec</groupId>
-                <artifactId>zkclient</artifactId>
-                <version>${zkclient.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
