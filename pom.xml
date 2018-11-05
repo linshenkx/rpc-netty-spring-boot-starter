@@ -5,7 +5,7 @@
 
     <groupId>com.github.linshenkx</groupId>
     <artifactId>rpc-netty-spring-boot-starter</artifactId>
-    <version>1.0.3.RELEASE</version>
+    <version>1.0.4.RELEASE</version>
     <packaging>pom</packaging>
 
     <name>rpc-netty-spring-boot-starter</name>
@@ -33,6 +33,7 @@
     </properties>
 
     <modules>
+        <module>rpc-netty-common</module>
         <module>rpc-netty-server-spring-boot-autoconfigure</module>
         <module>rpc-netty-server-spring-boot-starter</module>
         <module>rpc-netty-client-spring-boot-autoconfigure</module>
