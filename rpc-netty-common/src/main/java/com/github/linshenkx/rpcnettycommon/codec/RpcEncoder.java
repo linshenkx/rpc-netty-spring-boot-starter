@@ -1,6 +1,8 @@
 package com.github.linshenkx.rpcnettycommon.codec;
 
-import com.github.linshenkx.rpcnettycommon.util.ProtoSerializationUtil;
+import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
+import com.github.linshenkx.rpcnettycommon.serialization.engine.SerializerEngine;
+import com.github.linshenkx.rpcnettycommon.serialization.serializer.impl.ProtoStuffSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -24,7 +26,7 @@ public class RpcEncoder extends MessageToByteEncoder {
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         if(genericClass.isInstance(msg)){
-            byte[] data= ProtoSerializationUtil.serialize(msg);
+            byte[] data= SerializerEngine.serialize(msg, SerializeType.ProtoStuffSerializer.getSerializeType());
             out.writeInt(data.length);
             out.writeBytes(data);
         }

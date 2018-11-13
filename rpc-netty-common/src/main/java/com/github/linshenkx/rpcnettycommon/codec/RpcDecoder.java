@@ -1,6 +1,8 @@
 package com.github.linshenkx.rpcnettycommon.codec;
 
-import com.github.linshenkx.rpcnettycommon.util.ProtoSerializationUtil;
+import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
+import com.github.linshenkx.rpcnettycommon.serialization.engine.SerializerEngine;
+import com.github.linshenkx.rpcnettycommon.serialization.serializer.impl.ProtoStuffSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -34,6 +36,6 @@ public class RpcDecoder extends ByteToMessageDecoder {
         }
         byte[] data=new byte[dataLength];
         in.readBytes(data);
-        out.add(ProtoSerializationUtil.deserialize(data,genericClass));
+        out.add(SerializerEngine.deserialize(data,genericClass, SerializeType.ProtoStuffSerializer.getSerializeType()));
     }
 }
