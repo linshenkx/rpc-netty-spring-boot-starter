@@ -1,6 +1,8 @@
 package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.server;
 
+import com.alibaba.fastjson.JSON;
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
+import com.github.linshenkx.rpcnettycommon.bean.ServiceInfo;
 import com.github.linshenkx.rpcnettycommon.codec.decode.RemotingTransporterDecoder;
 import com.github.linshenkx.rpcnettycommon.codec.encode.RemotingTransporterEncoder;
 import com.github.linshenkx.rpcnettycommon.handler.RpcServerHandler;
@@ -103,10 +105,13 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             ChannelFuture future=bootstrap.bind(rpcProperties.getPort()).sync();
             log.info("server started,listening on {}",rpcProperties.getPort());
             //注册RPC服务地址
-            String serviceAddress= InetAddress.getLocalHost().getHostAddress()+":"+rpcProperties.getPort();
+            //TODO:权重计算方式要改进
+            ServiceInfo serviceInfo=
+                    new ServiceInfo(InetAddress.getLocalHost().getHostAddress(),rpcProperties.getPort(),(int) Runtime.getRuntime().freeMemory());
+            String serviceInfoString= JSON.toJSONString(serviceInfo);
             for(String interfaceName:handlerMap.keySet()){
-                rpcServiceRegistry.register(interfaceName,serviceAddress);
-                log.info("register service:{}=>{}",interfaceName,serviceAddress);
+                rpcServiceRegistry.register(interfaceName,serviceInfoString);
+                log.info("register service:{}=>{}",interfaceName,serviceInfoString);
             }
             //释放资源
             future.channel().closeFuture().sync();

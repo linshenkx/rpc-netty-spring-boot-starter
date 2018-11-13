@@ -2,6 +2,7 @@ server:
   port: 9090
 zk:
   address: 116.196.113.170:2181,116.196.113.170:2182,116.196.113.170:2183
-  connectTimeOut: 10000
+  connectTimeOut: 20000
   sessionTimeOut: 10000
   registryPath: "/defaultRegistry"
+  clusterStrategy: Polling

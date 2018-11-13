@@ -1,5 +1,6 @@
 package com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties;
 
+import com.github.linshenkx.rpcnettycommon.cluster.ClusterStrategyEnum;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -16,5 +17,7 @@ public class ZKProperties {
     private int sessionTimeOut=5000;
     private int connectTimeOut=1000;
     private String registryPath="/defaultRegistry";
+
+    private ClusterStrategyEnum clusterStrategy;
 
 }

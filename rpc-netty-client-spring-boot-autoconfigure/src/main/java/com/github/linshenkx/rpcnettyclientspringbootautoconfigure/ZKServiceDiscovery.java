@@ -49,6 +49,7 @@ public class ZKServiceDiscovery {
     // 创建 ZooKeeper 客户端
     zkClient = new ZkClient(zkProperties.getAddress(), zkProperties.getSessionTimeOut(), zkProperties.getConnectTimeOut());
     log.info("connect to zookeeper");
+    log.info("using Strategy:"+zkProperties.getClusterStrategy().getCode());
   }
 
   /**

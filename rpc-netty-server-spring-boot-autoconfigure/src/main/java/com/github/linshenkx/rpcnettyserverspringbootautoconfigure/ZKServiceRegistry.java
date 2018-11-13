@@ -39,9 +39,9 @@ public class ZKServiceRegistry {
    * 将服务地址注册到对应服务名下
    * 断开连接后地址自动清除
    * @param serviceName
-   * @param serviceAddress
+   * @param serviceInfo
    */
-  public void register(String serviceName, String serviceAddress) {
+  public void register(String serviceName, String serviceInfo) {
     // 创建 registry 节点（持久）
     String registryPath = zkProperties.getRegistryPath();
     if (!zkClient.exists(registryPath)) {
@@ -56,7 +56,7 @@ public class ZKServiceRegistry {
     }
     // 创建 address 节点（临时）
     String addressPath = servicePath + "/address-";
-    String addressNode = zkClient.createEphemeralSequential(addressPath, serviceAddress);
+    String addressNode = zkClient.createEphemeralSequential(addressPath, serviceInfo);
     log.info("create address node: {}", addressNode);
   }
 

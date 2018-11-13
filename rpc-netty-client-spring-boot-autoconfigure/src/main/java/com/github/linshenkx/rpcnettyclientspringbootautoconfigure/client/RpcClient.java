@@ -1,10 +1,15 @@
 package com.github.linshenkx.rpcnettyclientspringbootautoconfigure.client;
 
 
+import com.alibaba.fastjson.JSON;
 import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.ZKServiceDiscovery;
 import com.github.linshenkx.rpcnettycommon.bean.RemotingTransporter;
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
+import com.github.linshenkx.rpcnettycommon.bean.ServiceInfo;
+import com.github.linshenkx.rpcnettycommon.cluster.ClusterStrategy;
+import com.github.linshenkx.rpcnettycommon.cluster.ClusterStrategyEnum;
+import com.github.linshenkx.rpcnettycommon.cluster.engine.ClusterEngine;
 import com.github.linshenkx.rpcnettycommon.codec.decode.RemotingTransporterDecoder;
 import com.github.linshenkx.rpcnettycommon.codec.encode.RemotingTransporterEncoder;
 import com.github.linshenkx.rpcnettycommon.handler.RpcClientHandler;
@@ -18,14 +23,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @version V1.0
@@ -56,22 +59,28 @@ public class RpcClient {
                     rpcRequest.setMethodName(method.getName());
                     rpcRequest.setParameterTypes(method.getParameterTypes());
                     rpcRequest.setParameters(args);
-                    //获取RPC服务地址
+                    //获取RPC服务信息列表
                     String serviceName=interfaceClass.getName();
                     List<String> addressList=zkServiceDiscovery.getAddressList(serviceName);
-                    String serviceAddress=addressList.get(ThreadLocalRandom.current().nextInt(addressList.size()));
+
+                    List<ServiceInfo> serviceInfoList=new ArrayList<>(addressList.size());
+                    for(String serviceInfoString:addressList){
+                        serviceInfoList.add(JSON.parseObject(serviceInfoString,ServiceInfo.class));
+                    }
+                    //使用轮询负载均衡策略读入策略
+                    //TODO:根据配置文件
+                    ClusterStrategy clusterStrategy= ClusterEngine.queryClusterStrategy(ClusterStrategyEnum.Polling.getCode());
+                    ServiceInfo serviceInfo = clusterStrategy.select(serviceInfoList);
+
 
                     RemotingTransporter remotingTransporter=RemotingTransporter.builder().build();
                     remotingTransporter.setFlag((byte) 1);
                     remotingTransporter.setBodyContent(rpcRequest);
 
-                    log.info("get serviceAddres:"+serviceAddress);
+                    log.info("get serviceInfo:"+serviceInfo);
                     //从RPC服务地址中解析主机名与端口号
-                    String[] stringArray= StringUtils.split(serviceAddress,":");
-                    String host= Objects.requireNonNull(stringArray)[0];
-                    int port=Integer.parseInt(stringArray[1]);
                     //发送RPC请求
-                    RemotingTransporter rpcResponse=send(remotingTransporter,host,port);
+                    RemotingTransporter rpcResponse=send(remotingTransporter,serviceInfo.getHost(),serviceInfo.getPort());
                     //获取响应结果
                     if(rpcResponse==null){
                         log.error("send request failure",new IllegalStateException("response is null"));
