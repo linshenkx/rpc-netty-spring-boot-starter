@@ -5,9 +5,9 @@ import com.github.linshenkx.rpcnettycommon.codec.decode.RemotingTransporterDecod
 import com.github.linshenkx.rpcnettycommon.codec.encode.RemotingTransporterEncoder;
 import com.github.linshenkx.rpcnettycommon.handler.RpcServerHandler;
 import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
+import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.ZKServiceRegistry;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.annotation.RpcService;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.RpcServerProperties;
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.ZKServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;

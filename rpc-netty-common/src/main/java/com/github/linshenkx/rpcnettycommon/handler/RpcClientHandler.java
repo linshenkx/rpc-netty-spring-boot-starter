@@ -3,8 +3,7 @@ package com.github.linshenkx.rpcnettycommon.handler;
 import com.github.linshenkx.rpcnettycommon.bean.RemotingTransporter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -14,8 +13,8 @@ import java.util.concurrent.ConcurrentMap;
  * @date: 2018/11/1
  * @Description: TODO
  */
+@Log4j2
 public class RpcClientHandler extends SimpleChannelInboundHandler<RemotingTransporter> {
-    private static final Logger logger = LoggerFactory.getLogger(RpcClientHandler.class);
 
     private ConcurrentMap<Long,RemotingTransporter> responseMap;
 
@@ -25,13 +24,13 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RemotingTransp
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RemotingTransporter remotingTransporter) throws Exception {
-        logger.info("read a Response,invokeId: "+remotingTransporter.getInvokeId());
+        log.info("read a Response,invokeId: "+remotingTransporter.getInvokeId());
         responseMap.put(remotingTransporter.getInvokeId(),remotingTransporter);
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
-        logger.error("client caught exception",cause);
+        log.error("client caught exception",cause);
         ctx.close();
     }
 

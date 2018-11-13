@@ -1,4 +1,4 @@
-package com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties;
+package com.github.linshenkx.rpcnettycommon.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @Description: TODO
  */
 @Data
-@ConfigurationProperties(prefix = "zk")
+@ConfigurationProperties(prefix = "zk1")
 public class ZKProperties {
     private String address ;
     private int sessionTimeOut=5000;

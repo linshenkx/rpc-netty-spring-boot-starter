@@ -1,7 +1,7 @@
 package com.github.linshenkx.rpcnettyclientspringbootautoconfigure.client;
 
 
-import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.discovery.ZKServiceDiscovery;
+import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.ZKServiceDiscovery;
 import com.github.linshenkx.rpcnettycommon.bean.RemotingTransporter;
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
@@ -21,9 +21,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Proxy;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @version V1.0
@@ -56,7 +58,8 @@ public class RpcClient {
                     rpcRequest.setParameters(args);
                     //获取RPC服务地址
                     String serviceName=interfaceClass.getName();
-                    String serviceAddress=zkServiceDiscovery.discover(serviceName);
+                    List<String> addressList=zkServiceDiscovery.getAddressList(serviceName);
+                    String serviceAddress=addressList.get(ThreadLocalRandom.current().nextInt(addressList.size()));
 
                     RemotingTransporter remotingTransporter=RemotingTransporter.builder().build();
                     remotingTransporter.setFlag((byte) 1);

@@ -1,4 +1,4 @@
-package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry;
+package com.github.linshenkx.rpcnettyserverspringbootautoconfigure;
 
 
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.ZKProperties;
@@ -6,11 +6,8 @@ import lombok.extern.log4j.Log4j2;
 import org.I0Itec.zkclient.ZkClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @version V1.0
@@ -31,25 +28,11 @@ public class ZKServiceRegistry {
   @PostConstruct
   public void init() {
     // 创建 ZooKeeper 客户端
-    zkClient = new ZkClient(getAddress(zkProperties.getAddressList()), zkProperties.getSessionTimeOut(), zkProperties.getConnectTimeOut());
+    zkClient = new ZkClient(zkProperties.getAddress(), zkProperties.getSessionTimeOut(), zkProperties.getConnectTimeOut());
     log.info("connect to zookeeper");
   }
 
-  public String getAddress(List<String> addressList){
-    if(CollectionUtils.isEmpty(addressList)){
-      String defaultAddress="localhost:2181";
-      log.error("addressList is empty,using defaultAddress:"+defaultAddress);
-      return defaultAddress;
-    }
-    //待改进策略
-    String address= getRandomAddress(addressList);
-    log.info("using address:"+address);
-    return address;
-  }
 
-  private String getRandomAddress(List<String> addressList){
-    return addressList.get(ThreadLocalRandom.current().nextInt(addressList.size()));
-  }
 
   /**
    * 为服务端提供注册

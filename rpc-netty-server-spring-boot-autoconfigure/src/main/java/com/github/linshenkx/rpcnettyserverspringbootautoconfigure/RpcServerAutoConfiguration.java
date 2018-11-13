@@ -2,7 +2,6 @@ package com.github.linshenkx.rpcnettyserverspringbootautoconfigure;
 
 
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.RpcServerProperties;
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.ZKServiceRegistry;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.server.RpcServer;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.ZKProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

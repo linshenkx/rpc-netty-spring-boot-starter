@@ -7,8 +7,7 @@ import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -19,9 +18,8 @@ import java.util.Map;
  * @date: 2018/10/31
  * @Description: RPC服务端处理器（处理RpcRequest）
  */
+@Log4j2
 public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransporter> {
-  private static final Logger log = LoggerFactory.getLogger(RpcClientHandler.class);
-
 
   /**
    * 存放 服务名称 与 服务实例 之间的映射关系
