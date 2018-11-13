@@ -1,5 +1,6 @@
-package com.github.linshenkx.rpcnettycommon.util;
+package com.github.linshenkx.rpcnettycommon.serialization.serializer.impl;
 
+import com.github.linshenkx.rpcnettycommon.serialization.serializer.ISerializer;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Description: protobuf序列化工具(基于protostuff)
  */
 
-public class ProtoSerializationUtil {
+public class ProtoStuffSerializer implements ISerializer {
 
     private static final Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
 
@@ -26,8 +27,9 @@ public class ProtoSerializationUtil {
     /**
      * 序列化（对象 -> 字节数组）
      */
+    @Override
     @SuppressWarnings("unchecked")
-    public static <T> byte[] serialize(T obj) {
+    public  <T> byte[] serialize(T obj) {
         Class<T> cls = (Class<T>) obj.getClass();
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try {
@@ -43,7 +45,8 @@ public class ProtoSerializationUtil {
     /**
      * 反序列化（字节数组 -> 对象）
      */
-    public static <T> T deserialize(byte[] data, Class<T> cls) {
+    @Override
+    public  <T> T deserialize(byte[] data, Class<T> cls) {
         try {
             T message = objenesis.newInstance(cls);
             Schema<T> schema = getSchema(cls);
@@ -55,7 +58,7 @@ public class ProtoSerializationUtil {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Schema<T> getSchema(Class<T> cls) {
+    private  <T> Schema<T> getSchema(Class<T> cls) {
         Schema<T> schema = (Schema<T>) cachedSchema.get(cls);
         if (schema == null) {
             schema = RuntimeSchema.createFrom(cls);
