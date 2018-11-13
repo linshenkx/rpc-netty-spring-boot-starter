@@ -1,6 +1,5 @@
 package com.github.linshenkx.rpcnettycommon.protocal;
 
-import lombok.Data;
 
 /**
  * @version V1.0

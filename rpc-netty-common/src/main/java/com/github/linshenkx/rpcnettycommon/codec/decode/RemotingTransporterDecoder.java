@@ -6,7 +6,6 @@ import com.github.linshenkx.rpcnettycommon.exception.remoting.RemotingContextExc
 import com.github.linshenkx.rpcnettycommon.protocal.XuanProtocol;
 import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
 import com.github.linshenkx.rpcnettycommon.serialization.engine.SerializerEngine;
-import com.github.linshenkx.rpcnettycommon.serialization.serializer.impl.ProtoStuffSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
@@ -25,12 +24,15 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
 
     private static final Logger logger = LoggerFactory.getLogger(RemotingTransporterDecoder.class);
     private static final int MAX_BODY_SIZE = 1024 * 1024 * 5;
-    //解码对象编码所使用序列化类型
+    private Class<?> genericClass;
+    /**
+     * 解码对象编码所使用序列化类型
+     */
     private SerializeType serializeType;
     /**
      * 用于暂存解码RemotingTransporter信息,一个就够了
      */
-    private final RemotingTransporter remotingTransporter=new RemotingTransporter();
+    private final RemotingTransporter remotingTransporter=RemotingTransporter.builder().build();
 
     /**
      * 用于ReplayingDecoder的状态管理
@@ -39,10 +41,11 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
         HEADER_MAGIC, HEADER_FLAG, HEADER_INVOKE_ID, HEADER_BODY_LENGTH, BODY
     }
 
-    public RemotingTransporterDecoder(SerializeType serializeType){
+    public RemotingTransporterDecoder(SerializeType serializeType,Class<?> genericClass){
         //设置 state() 的初始值,以便进入switch
         super(State.HEADER_MAGIC);
         this.serializeType = serializeType;
+        this.genericClass=genericClass;
     }
 
     @Override
@@ -66,7 +69,7 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
                 int bodyLength = checkBodyLength(remotingTransporter.getBodyLength());
                 byte[] bytes=new byte[bodyLength];
                 byteBuf.readBytes(bytes);
-                BodyContent bodyContent= SerializerEngine.deserialize(bytes,BodyContent.class,serializeType.getSerializeType());
+                BodyContent bodyContent= (BodyContent) SerializerEngine.deserialize(bytes,genericClass,serializeType.getSerializeType());
                 list.add( RemotingTransporter.builder()
                         .flag(remotingTransporter.getFlag())
                         .invokeId(remotingTransporter.getInvokeId())

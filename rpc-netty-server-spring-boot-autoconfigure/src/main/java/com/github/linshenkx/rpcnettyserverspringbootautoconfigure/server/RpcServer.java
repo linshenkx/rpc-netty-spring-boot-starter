@@ -1,13 +1,13 @@
 package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.server;
 
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
-import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
-import com.github.linshenkx.rpcnettycommon.codec.RpcDecoder;
-import com.github.linshenkx.rpcnettycommon.codec.RpcEncoder;
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.handler.RpcServerHandler;
+import com.github.linshenkx.rpcnettycommon.codec.decode.RemotingTransporterDecoder;
+import com.github.linshenkx.rpcnettycommon.codec.encode.RemotingTransporterEncoder;
+import com.github.linshenkx.rpcnettycommon.handler.RpcServerHandler;
+import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
+import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.annotation.RpcService;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.RpcServerProperties;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.ZKServiceRegistry;
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.annotation.RpcService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -92,9 +92,9 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                 protected void initChannel(SocketChannel channel) throws Exception {
                     ChannelPipeline pipeline=channel.pipeline();
                     //解码RPC请求
-                    pipeline.addLast(new RpcDecoder(RpcRequest.class));
+                    pipeline.addLast(new RemotingTransporterDecoder(SerializeType.ProtoStuffSerializer, RpcRequest.class));
                     //编码RPC请求
-                    pipeline.addFirst(new RpcEncoder(RpcResponse.class));
+                    pipeline.addFirst(new RemotingTransporterEncoder(SerializeType.ProtoStuffSerializer));
                     //处理RPC请求
                     pipeline.addLast(new RpcServerHandler(handlerMap));
                 }

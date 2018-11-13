@@ -7,7 +7,6 @@ import com.github.linshenkx.rpcnettycommon.serialization.engine.SerializerEngine
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import lombok.extern.log4j.Log4j2;
 
 /**
  * @version V1.0
@@ -15,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
  * @date: 18-11-12
  * @Description: TODO
  */
-@Log4j2
 public class RemotingTransporterEncoder extends MessageToByteEncoder<RemotingTransporter> {
 
     //序列化类型
@@ -30,7 +28,6 @@ public class RemotingTransporterEncoder extends MessageToByteEncoder<RemotingTra
         //获取请求体数组
         //使用序列化引擎
         byte[] body= SerializerEngine.serialize(remotingTransporter.getBodyContent(), serializeType.getSerializeType());
-
         //magic+flag+invokeId+bodyLength+bodyContent
         byteBuf.writeShort(XuanProtocol.MAGIC)
                 .writeByte(remotingTransporter.getFlag())

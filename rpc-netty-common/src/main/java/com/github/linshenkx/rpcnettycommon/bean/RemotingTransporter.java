@@ -35,7 +35,7 @@ public class RemotingTransporter {
     /**
      * 每一个请求的唯一识别id（由于采用异步通讯的方式，用来把请求request和返回的response对应上）
      */
-    private long invokeId;
+    private long invokeId=invokeIdGnerator.getAndIncrement();
 
     /**
      * 消息体字节数组长度
@@ -46,22 +46,6 @@ public class RemotingTransporter {
      * 消息体内容(还需要编码序列化成字节数组)
      */
     private transient BodyContent bodyContent;
-
-    /**
-     * 默认构造自增获得invokeId
-     */
-    public RemotingTransporter(){
-        // getAndIncrement() When it grows to MAX_VALUE, it will grow to MIN_VALUE, and the negative can be used as ID
-        invokeId=invokeIdGnerator.getAndIncrement();
-    }
-
-    /**
-     * 自定义invokeId,用于还原RemotingTransporter
-     * @param invokeId
-     */
-    public RemotingTransporter(Long invokeId){
-        this.invokeId=invokeId;
-    }
 
 
 }

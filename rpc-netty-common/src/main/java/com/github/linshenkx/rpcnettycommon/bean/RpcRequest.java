@@ -9,11 +9,8 @@ import lombok.Data;
  * @Description: TODO
  */
 @Data
-public class RpcRequest {
-    /**
-     * 请求ID
-     */
-    private String requestId;
+public class RpcRequest implements BodyContent {
+
     /**
      * 接口名称
      */

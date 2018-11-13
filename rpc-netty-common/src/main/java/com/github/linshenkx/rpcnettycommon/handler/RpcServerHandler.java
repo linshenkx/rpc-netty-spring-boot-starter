@@ -1,12 +1,14 @@
-package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.handler;
+package com.github.linshenkx.rpcnettycommon.handler;
 
 
+import com.github.linshenkx.rpcnettycommon.bean.RemotingTransporter;
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -17,8 +19,8 @@ import java.util.Map;
  * @date: 2018/10/31
  * @Description: RPC服务端处理器（处理RpcRequest）
  */
-@Log4j2
-public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
+public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransporter> {
+  private static final Logger log = LoggerFactory.getLogger(RpcClientHandler.class);
 
 
   /**
@@ -31,23 +33,25 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
   }
 
   @Override
-  public void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-    log.info("channelRead0 begin");
-    // 创建 RPC 响应对象
-    RpcResponse response = new RpcResponse();
-    response.setRequestId(request.getRequestId());
-    try {
+  protected void channelRead0(ChannelHandlerContext channelHandlerContext, RemotingTransporter remotingTransporter) throws Exception {
+      log.info("channelRead0 begin");
+      RemotingTransporter response=RemotingTransporter.builder().build();
+      response.setFlag((byte) 0);
+      response.setInvokeId(remotingTransporter.getInvokeId());
+      RpcResponse rpcResponse=new RpcResponse();
+      try {
       // 处理 RPC 请求成功
-      Object result = handle(request);
-      response.setResult(result);
+      Object result= handle((RpcRequest)remotingTransporter.getBodyContent());
+      rpcResponse.setResult(result);
     } catch (Exception e) {
       // 处理 RPC 请求失败
-      response.setException(e);
+      rpcResponse.setException(e);
       log.error("handle result failure", e);
     }
-    // 写入 RPC 响应对象（写入完毕后立即关闭与客户端的连接）
-    ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+      response.setBodyContent(rpcResponse);
+    channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
   }
+
 
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
@@ -76,4 +80,6 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     log.info(parameters[0].toString());
     return method.invoke(serviceBean, parameters);
   }
+
+
 }
