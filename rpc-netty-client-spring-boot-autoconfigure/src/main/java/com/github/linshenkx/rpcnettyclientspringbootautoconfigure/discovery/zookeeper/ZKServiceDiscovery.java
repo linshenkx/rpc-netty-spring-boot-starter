@@ -1,4 +1,4 @@
-package com.github.linshenkx.rpcnettyclientspringbootautoconfigure;
+package com.github.linshenkx.rpcnettyclientspringbootautoconfigure.discovery.zookeeper;
 
 
 import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties.ZKProperties;
@@ -49,7 +49,6 @@ public class ZKServiceDiscovery {
     // 创建 ZooKeeper 客户端
     zkClient = new ZkClient(zkProperties.getAddress(), zkProperties.getSessionTimeOut(), zkProperties.getConnectTimeOut());
     log.info("connect to zookeeper");
-    log.info("using Strategy:"+zkProperties.getClusterStrategy().getCode());
   }
 
   /**
@@ -78,14 +77,10 @@ public class ZKServiceDiscovery {
     servicePathsMap.put(serviceName,paths);
     //保持监控
     if(!zkChildListenerMap.containsKey(serviceName)){
-      IZkChildListener iZkChildListener=new IZkChildListener() {
-        @Override
-        public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-          //当子节点列表变化时重新discover
-          discover(serviceName);
-          System.out.println("子节点列表变化");
-          log.info("work server list changed ");
-        }
+      IZkChildListener iZkChildListener= (parentPath, currentChilds) -> {
+        //当子节点列表变化时重新discover
+        discover(serviceName);
+        log.info("子节点列表发生变化 ");
       };
       zkClient.subscribeChildChanges(servicePath, iZkChildListener);
       zkChildListenerMap.put(serviceName,iZkChildListener);

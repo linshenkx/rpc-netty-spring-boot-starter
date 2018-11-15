@@ -7,7 +7,7 @@ import com.github.linshenkx.rpcnettycommon.codec.decode.RemotingTransporterDecod
 import com.github.linshenkx.rpcnettycommon.codec.encode.RemotingTransporterEncoder;
 import com.github.linshenkx.rpcnettycommon.handler.RpcServerHandler;
 import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.ZKServiceRegistry;
+import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.zookeeper.ZKServiceRegistry;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.annotation.RpcService;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.RpcServerProperties;
 import io.netty.bootstrap.ServerBootstrap;
@@ -107,7 +107,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             //注册RPC服务地址
             //TODO:权重计算方式要改进
             ServiceInfo serviceInfo=
-                    new ServiceInfo(InetAddress.getLocalHost().getHostAddress(),rpcProperties.getPort(),(int) Runtime.getRuntime().freeMemory());
+                    new ServiceInfo(InetAddress.getLocalHost().getHostAddress(),rpcProperties.getPort(),Runtime.getRuntime().availableProcessors());
             String serviceInfoString= JSON.toJSONString(serviceInfo);
             for(String interfaceName:handlerMap.keySet()){
                 rpcServiceRegistry.register(interfaceName,serviceInfoString);

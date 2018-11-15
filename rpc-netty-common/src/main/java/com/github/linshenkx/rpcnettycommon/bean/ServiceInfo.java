@@ -1,5 +1,6 @@
 package com.github.linshenkx.rpcnettycommon.bean;
 
+import com.github.linshenkx.rpcnettycommon.route.WeightGetAble;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ServiceInfo implements Cloneable{
+public class ServiceInfo implements Cloneable , WeightGetAble {
 
     private String host;
     private int port;
@@ -25,5 +26,10 @@ public class ServiceInfo implements Cloneable{
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    @Override
+    public int getWeightFactors() {
+        return getWeight();
     }
 }

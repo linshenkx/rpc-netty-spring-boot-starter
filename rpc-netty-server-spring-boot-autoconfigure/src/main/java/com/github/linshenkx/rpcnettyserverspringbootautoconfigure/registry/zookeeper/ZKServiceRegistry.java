@@ -1,4 +1,4 @@
-package com.github.linshenkx.rpcnettyserverspringbootautoconfigure;
+package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.zookeeper;
 
 
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.ZKProperties;

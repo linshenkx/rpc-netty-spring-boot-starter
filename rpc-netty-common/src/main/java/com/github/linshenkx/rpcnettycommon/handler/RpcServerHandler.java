@@ -1,7 +1,7 @@
 package com.github.linshenkx.rpcnettycommon.handler;
 
 
-import com.github.linshenkx.rpcnettycommon.bean.RemotingTransporter;
+import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
 import io.netty.channel.ChannelFutureListener;
@@ -34,7 +34,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
   protected void channelRead0(ChannelHandlerContext channelHandlerContext, RemotingTransporter remotingTransporter) throws Exception {
       log.info("channelRead0 begin");
       RemotingTransporter response=RemotingTransporter.builder().build();
-      response.setFlag((byte) 0);
+      response.setFlag(new RemotingTransporter.Flag(false,true,false,false,0));
       response.setInvokeId(remotingTransporter.getInvokeId());
       RpcResponse rpcResponse=new RpcResponse();
       try {

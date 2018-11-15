@@ -1,9 +1,9 @@
 package com.github.linshenkx.rpcnettycommon.codec.decode;
 
 import com.github.linshenkx.rpcnettycommon.bean.BodyContent;
-import com.github.linshenkx.rpcnettycommon.bean.RemotingTransporter;
+import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
 import com.github.linshenkx.rpcnettycommon.exception.remoting.RemotingContextException;
-import com.github.linshenkx.rpcnettycommon.protocal.XuanProtocol;
+import com.github.linshenkx.rpcnettycommon.protocal.xuan.XuanProtocol;
 import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
 import com.github.linshenkx.rpcnettycommon.serialization.engine.SerializerEngine;
 import io.netty.buffer.ByteBuf;
@@ -57,7 +57,7 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
                 //移到下一检查点(一是改变state的值的状态，二是获取到最新的读指针的下标)
                 checkpoint(State.HEADER_FLAG);
             case HEADER_FLAG:
-                remotingTransporter.setFlag(byteBuf.readByte());
+                remotingTransporter.setFlag(new RemotingTransporter.Flag(byteBuf.readByte()));
                 checkpoint(State.HEADER_INVOKE_ID);
             case HEADER_INVOKE_ID:
                 remotingTransporter.setInvokeId(byteBuf.readLong());

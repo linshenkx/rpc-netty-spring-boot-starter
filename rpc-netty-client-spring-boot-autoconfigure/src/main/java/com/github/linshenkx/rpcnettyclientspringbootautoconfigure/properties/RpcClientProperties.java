@@ -1,5 +1,6 @@
 package com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties;
 
+import com.github.linshenkx.rpcnettycommon.route.RouteStrategyEnum;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -10,11 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @Description: TODO
  */
 @Data
-@ConfigurationProperties(prefix = "zk")
-public class ZKProperties {
-    private String address ;
-    private int sessionTimeOut=5000;
-    private int connectTimeOut=1000;
-    private String registryPath="/defaultRegistry";
-
+@ConfigurationProperties(prefix = "rpc.client")
+public class RpcClientProperties {
+    private RouteStrategyEnum routeStrategy= RouteStrategyEnum.Random;
 }

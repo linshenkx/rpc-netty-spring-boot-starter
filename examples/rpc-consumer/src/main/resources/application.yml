@@ -5,4 +5,6 @@ zk:
   connectTimeOut: 20000
   sessionTimeOut: 10000
   registryPath: "/defaultRegistry"
-  clusterStrategy: Polling
+rpc:
+  client:
+    routeStrategy: Polling

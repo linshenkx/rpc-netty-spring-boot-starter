@@ -2,17 +2,18 @@ package com.github.linshenkx.rpcnettyclientspringbootautoconfigure.client;
 
 
 import com.alibaba.fastjson.JSON;
-import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.ZKServiceDiscovery;
-import com.github.linshenkx.rpcnettycommon.bean.RemotingTransporter;
+import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.discovery.zookeeper.ZKServiceDiscovery;
+import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties.RpcClientProperties;
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
 import com.github.linshenkx.rpcnettycommon.bean.ServiceInfo;
-import com.github.linshenkx.rpcnettycommon.cluster.ClusterStrategy;
-import com.github.linshenkx.rpcnettycommon.cluster.ClusterStrategyEnum;
-import com.github.linshenkx.rpcnettycommon.cluster.engine.ClusterEngine;
 import com.github.linshenkx.rpcnettycommon.codec.decode.RemotingTransporterDecoder;
 import com.github.linshenkx.rpcnettycommon.codec.encode.RemotingTransporterEncoder;
 import com.github.linshenkx.rpcnettycommon.handler.RpcClientHandler;
+import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
+import com.github.linshenkx.rpcnettycommon.route.RouteEngine;
+import com.github.linshenkx.rpcnettycommon.route.RouteStrategy;
+import com.github.linshenkx.rpcnettycommon.route.RouteStrategyEnum;
 import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -22,6 +23,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Proxy;
@@ -39,13 +41,27 @@ import java.util.concurrent.ConcurrentMap;
 @Log4j2
 @Component
 @AutoConfigureAfter(ZKServiceDiscovery.class)
+@EnableConfigurationProperties(RpcClientProperties.class)
 public class RpcClient {
+
     @Autowired
     private ZKServiceDiscovery zkServiceDiscovery;
+
+    @Autowired
+    private RpcClientProperties rpcClientProperties;
+
+    /**
+     * 维持服务的 轮询 路由状态
+     * 不同服务状态不同（服务列表也不同）
+     * 非轮询无需维持状态
+     */
+    private ConcurrentMap<String,RouteStrategy> serviceRouteStrategyMap=new ConcurrentHashMap<>();
+
     /**
      * 存放请求编号与响应对象的映射关系
      */
     private ConcurrentMap<Long, RemotingTransporter> responseMap=new ConcurrentHashMap<>();
+
 
     @SuppressWarnings("unchecked")
     public <T> T create(final Class<?> interfaceClass){
@@ -67,37 +83,46 @@ public class RpcClient {
                     for(String serviceInfoString:addressList){
                         serviceInfoList.add(JSON.parseObject(serviceInfoString,ServiceInfo.class));
                     }
-                    //使用轮询负载均衡策略读入策略
-                    //TODO:根据配置文件
-                    ClusterStrategy clusterStrategy= ClusterEngine.queryClusterStrategy(ClusterStrategyEnum.Polling.getCode());
-                    ServiceInfo serviceInfo = clusterStrategy.select(serviceInfoList);
+                    //根据配置文件获取路由策略
+                    log.info("使用负载均衡策略："+rpcClientProperties.getRouteStrategy());
+                    RouteStrategy routeStrategy ;
+                    //如果使用轮询，则需要保存状态（按服务名保存）
+                    if(RouteStrategyEnum.Polling==rpcClientProperties.getRouteStrategy()){
+                        routeStrategy=serviceRouteStrategyMap.getOrDefault(serviceName,RouteEngine.queryClusterStrategy(RouteStrategyEnum.Polling));
+                        serviceRouteStrategyMap.put(serviceName,routeStrategy);
+                    }else {
+                        routeStrategy= RouteEngine.queryClusterStrategy(rpcClientProperties.getRouteStrategy());
+                    }
+                    //根据路由策略选取服务提供方
+                    ServiceInfo serviceInfo = routeStrategy.select(serviceInfoList);
 
+                    RemotingTransporter remotingTransporter=new RemotingTransporter();
+                    //设置flag为请求，双路，非ping，非其他，序列化方式为0
+                    remotingTransporter.setFlag(new RemotingTransporter.Flag(true,true,false,false,0));
 
-                    RemotingTransporter remotingTransporter=RemotingTransporter.builder().build();
-                    remotingTransporter.setFlag((byte) 1);
                     remotingTransporter.setBodyContent(rpcRequest);
 
                     log.info("get serviceInfo:"+serviceInfo);
                     //从RPC服务地址中解析主机名与端口号
                     //发送RPC请求
-                    RemotingTransporter rpcResponse=send(remotingTransporter,serviceInfo.getHost(),serviceInfo.getPort());
+                    RpcResponse rpcResponse=send(remotingTransporter,serviceInfo.getHost(),serviceInfo.getPort());
                     //获取响应结果
                     if(rpcResponse==null){
                         log.error("send request failure",new IllegalStateException("response is null"));
                         return null;
                     }
-                    RpcResponse rpcResponse1= (RpcResponse) rpcResponse.getBodyContent();
-                    if(rpcResponse1.getException()!=null){
-                        log.error("response has exception",rpcResponse1.getException());
+                    if(rpcResponse.getException()!=null){
+                        log.error("response has exception",rpcResponse.getException());
                         return null;
                     }
-                    return rpcResponse1.getResult();
+
+                    return rpcResponse.getResult();
                 }
         );
     }
 
 
-    private RemotingTransporter send(RemotingTransporter remotingTransporter,String host,int port){
+    private RpcResponse send(RemotingTransporter remotingTransporter,String host,int port){
         log.info("send begin: "+host+":"+port);
         //客户端线程为1即可
         EventLoopGroup group=new NioEventLoopGroup(1);
@@ -116,14 +141,14 @@ public class RpcClient {
                 }
             });
             ChannelFuture future=bootstrap.connect(host,port).sync();
+            Channel channel=future.channel();
             log.info("invokeId: "+remotingTransporter.getInvokeId());
             //写入RPC请求对象
-            Channel channel=future.channel();
             channel.writeAndFlush(remotingTransporter).sync();
             channel.closeFuture().sync();
             log.info("send end");
             //获取RPC响应对象
-            return responseMap.get(remotingTransporter.getInvokeId());
+            return (RpcResponse) responseMap.get(remotingTransporter.getInvokeId()).getBodyContent();
         }catch (Exception e){
             log.error("client exception",e);
             return null;
@@ -134,5 +159,6 @@ public class RpcClient {
         }
 
     }
+
 
 }

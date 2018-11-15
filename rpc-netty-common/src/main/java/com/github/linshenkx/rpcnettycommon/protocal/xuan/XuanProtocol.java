@@ -1,4 +1,4 @@
-package com.github.linshenkx.rpcnettycommon.protocal;
+package com.github.linshenkx.rpcnettycommon.protocal.xuan;
 
 
 /**

@@ -1,6 +1,6 @@
 package com.github.linshenkx.rpcnettycommon.handler;
 
-import com.github.linshenkx.rpcnettycommon.bean.RemotingTransporter;
+import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.log4j.Log4j2;
