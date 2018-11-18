@@ -34,7 +34,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
   protected void channelRead0(ChannelHandlerContext channelHandlerContext, RemotingTransporter remotingTransporter) throws Exception {
       log.info("channelRead0 begin");
       RemotingTransporter response=RemotingTransporter.builder().build();
-      response.setFlag(new RemotingTransporter.Flag(false,true,false,false,0));
+      response.setFlag(new RemotingTransporter.Flag(false,true,false,false,remotingTransporter.getFlag().getSerializeType()));
       response.setInvokeId(remotingTransporter.getInvokeId());
       RpcResponse rpcResponse=new RpcResponse();
       try {

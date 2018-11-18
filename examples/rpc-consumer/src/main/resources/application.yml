@@ -8,3 +8,4 @@ zk:
 rpc:
   client:
     routeStrategy: Polling
+    serializeType: ProtoStuff

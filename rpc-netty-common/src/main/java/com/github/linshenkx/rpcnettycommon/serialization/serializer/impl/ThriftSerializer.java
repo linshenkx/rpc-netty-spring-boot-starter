@@ -8,11 +8,12 @@ import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
 
 /**
- * @author liyebing created on 17/1/25.
- * @version $Id$
+ * @version V1.0
+ * @author: lin_shen
+ * @date: 2018/11/18
+ * @Description: Thrift序列化（只能序列化IDL产生的类）
  */
 public class ThriftSerializer implements ISerializer {
-
 
     @Override
     public <T> byte[] serialize(T obj) {
@@ -23,7 +24,6 @@ public class ThriftSerializer implements ISerializer {
             throw new RuntimeException(e);
         }
     }
-
 
     @Override
     public <T> T deserialize(byte[] data, Class<T> clazz) {
@@ -37,6 +37,5 @@ public class ThriftSerializer implements ISerializer {
         }
 
     }
-
 
 }

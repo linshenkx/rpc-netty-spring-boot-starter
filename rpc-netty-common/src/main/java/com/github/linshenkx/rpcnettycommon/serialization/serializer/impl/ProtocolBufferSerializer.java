@@ -4,12 +4,14 @@ import com.github.linshenkx.rpcnettycommon.serialization.serializer.ISerializer;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 /**
- * @author liyebing created on 17/1/25.
- * @version $Id$
+ * @version V1.0
+ * @author: lin_shen
+ * @date: 2018/11/18
+ * @Description: ProtocolBuffer序列化（只能序列化IDL产生的类）
  */
 public class ProtocolBufferSerializer implements ISerializer {
 
-
+    @Override
     public <T> byte[] serialize(T obj) {
         try {
             return (byte[]) MethodUtils.invokeMethod(obj, "toByteArray");
@@ -19,6 +21,7 @@ public class ProtocolBufferSerializer implements ISerializer {
         return null;
     }
 
+    @Override
     public <T> T deserialize(byte[] data, Class<T> cls) {
         try {
             Object o = MethodUtils.invokeStaticMethod(cls, "getDefaultInstance");

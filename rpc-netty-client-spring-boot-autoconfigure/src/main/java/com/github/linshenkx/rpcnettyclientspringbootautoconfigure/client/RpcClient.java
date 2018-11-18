@@ -14,7 +14,6 @@ import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
 import com.github.linshenkx.rpcnettycommon.route.RouteEngine;
 import com.github.linshenkx.rpcnettycommon.route.RouteStrategy;
 import com.github.linshenkx.rpcnettycommon.route.RouteStrategyEnum;
-import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -85,6 +84,7 @@ public class RpcClient {
                     }
                     //根据配置文件获取路由策略
                     log.info("使用负载均衡策略："+rpcClientProperties.getRouteStrategy());
+                    log.info("使用序列化策略："+rpcClientProperties.getSerializeType());
                     RouteStrategy routeStrategy ;
                     //如果使用轮询，则需要保存状态（按服务名保存）
                     if(RouteStrategyEnum.Polling==rpcClientProperties.getRouteStrategy()){
@@ -97,8 +97,8 @@ public class RpcClient {
                     ServiceInfo serviceInfo = routeStrategy.select(serviceInfoList);
 
                     RemotingTransporter remotingTransporter=new RemotingTransporter();
-                    //设置flag为请求，双路，非ping，非其他，序列化方式为0
-                    remotingTransporter.setFlag(new RemotingTransporter.Flag(true,true,false,false,0));
+                    //设置flag为请求，双路，非ping，非其他，序列化方式为 配置文件中SerializeTypeEnum对应的code
+                    remotingTransporter.setFlag(new RemotingTransporter.Flag(true,true,false,false,rpcClientProperties.getSerializeType().getCode()));
 
                     remotingTransporter.setBodyContent(rpcRequest);
 
@@ -135,8 +135,8 @@ public class RpcClient {
                 @Override
                 protected void initChannel(SocketChannel channel) throws Exception {
                     ChannelPipeline pipeline=channel.pipeline();
-                    pipeline.addLast(new RemotingTransporterDecoder(SerializeType.ProtoStuffSerializer,RpcResponse.class))
-                            .addFirst(new RemotingTransporterEncoder(SerializeType.ProtoStuffSerializer))
+                    pipeline.addLast(new RemotingTransporterDecoder())
+                            .addFirst(new RemotingTransporterEncoder())
                             .addLast(new RpcClientHandler(responseMap));
                 }
             });

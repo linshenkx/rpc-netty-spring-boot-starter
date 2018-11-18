@@ -1,15 +1,13 @@
 package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.server;
 
 import com.alibaba.fastjson.JSON;
-import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.ServiceInfo;
 import com.github.linshenkx.rpcnettycommon.codec.decode.RemotingTransporterDecoder;
 import com.github.linshenkx.rpcnettycommon.codec.encode.RemotingTransporterEncoder;
 import com.github.linshenkx.rpcnettycommon.handler.RpcServerHandler;
-import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.zookeeper.ZKServiceRegistry;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.annotation.RpcService;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.RpcServerProperties;
+import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.zookeeper.ZKServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -94,9 +92,9 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                 protected void initChannel(SocketChannel channel) throws Exception {
                     ChannelPipeline pipeline=channel.pipeline();
                     //解码RPC请求
-                    pipeline.addLast(new RemotingTransporterDecoder(SerializeType.ProtoStuffSerializer, RpcRequest.class));
+                    pipeline.addLast(new RemotingTransporterDecoder());
                     //编码RPC请求
-                    pipeline.addFirst(new RemotingTransporterEncoder(SerializeType.ProtoStuffSerializer));
+                    pipeline.addFirst(new RemotingTransporterEncoder());
                     //处理RPC请求
                     pipeline.addLast(new RpcServerHandler(handlerMap));
                 }

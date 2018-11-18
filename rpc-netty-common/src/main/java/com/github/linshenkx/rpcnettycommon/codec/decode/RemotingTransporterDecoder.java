@@ -1,16 +1,17 @@
 package com.github.linshenkx.rpcnettycommon.codec.decode;
 
 import com.github.linshenkx.rpcnettycommon.bean.BodyContent;
-import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
+import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
+import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
 import com.github.linshenkx.rpcnettycommon.exception.remoting.RemotingContextException;
+import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
 import com.github.linshenkx.rpcnettycommon.protocal.xuan.XuanProtocol;
-import com.github.linshenkx.rpcnettycommon.serialization.common.SerializeType;
-import com.github.linshenkx.rpcnettycommon.serialization.engine.SerializerEngine;
+import com.github.linshenkx.rpcnettycommon.serialization.SerializeTypeEnum;
+import com.github.linshenkx.rpcnettycommon.serialization.SerializerEngine;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 
@@ -20,15 +21,11 @@ import java.util.List;
  * @date: 18-11-12
  * @Description: TODO
  */
+@Log4j2
 public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTransporterDecoder.State> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemotingTransporterDecoder.class);
     private static final int MAX_BODY_SIZE = 1024 * 1024 * 5;
-    private Class<?> genericClass;
-    /**
-     * 解码对象编码所使用序列化类型
-     */
-    private SerializeType serializeType;
+
     /**
      * 用于暂存解码RemotingTransporter信息,一个就够了
      */
@@ -41,11 +38,9 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
         HEADER_MAGIC, HEADER_FLAG, HEADER_INVOKE_ID, HEADER_BODY_LENGTH, BODY
     }
 
-    public RemotingTransporterDecoder(SerializeType serializeType,Class<?> genericClass){
+    public RemotingTransporterDecoder( ){
         //设置 state() 的初始值,以便进入switch
         super(State.HEADER_MAGIC);
-        this.serializeType = serializeType;
-        this.genericClass=genericClass;
     }
 
     @Override
@@ -69,14 +64,15 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
                 int bodyLength = checkBodyLength(remotingTransporter.getBodyLength());
                 byte[] bytes=new byte[bodyLength];
                 byteBuf.readBytes(bytes);
-                BodyContent bodyContent= (BodyContent) SerializerEngine.deserialize(bytes,genericClass,serializeType.getSerializeType());
-                list.add( RemotingTransporter.builder()
+                Class genericClass=remotingTransporter.getFlag().isRequest()?RpcRequest.class: RpcResponse.class;
+                BodyContent bodyContent= (BodyContent) SerializerEngine.deserialize(bytes,genericClass,SerializeTypeEnum.queryByCode(remotingTransporter.getFlag().getSerializeType()));
+                RemotingTransporter remotingTransporter1=RemotingTransporter.builder()
                         .flag(remotingTransporter.getFlag())
                         .invokeId(remotingTransporter.getInvokeId())
                         .bodyLength(remotingTransporter.getBodyLength())
                         .bodyContent(bodyContent)
-                        .build()
-                );
+                        .build();
+                list.add(remotingTransporter1);
                 break;
             default:
                 break;
@@ -96,7 +92,7 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
     private void checkMagic(short magic) throws RemotingContextException{
         //检查魔数
         if (XuanProtocol.MAGIC != magic) {
-            logger.error("魔数不匹配");
+            log.error("魔数不匹配");
             throw new RemotingContextException("magic value is not equal "+XuanProtocol.MAGIC);
         }
     }

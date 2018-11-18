@@ -1,6 +1,7 @@
 package com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties;
 
 import com.github.linshenkx.rpcnettycommon.route.RouteStrategyEnum;
+import com.github.linshenkx.rpcnettycommon.serialization.SerializeTypeEnum;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -14,4 +15,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "rpc.client")
 public class RpcClientProperties {
     private RouteStrategyEnum routeStrategy= RouteStrategyEnum.Random;
+    private SerializeTypeEnum serializeType=SerializeTypeEnum.JSON;
 }

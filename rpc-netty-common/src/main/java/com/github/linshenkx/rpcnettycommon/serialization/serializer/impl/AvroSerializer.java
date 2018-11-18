@@ -11,8 +11,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
- * @author liyebing created on 17/1/26.
- * @version $Id$
+ * @version V1.0
+ * @author: lin_shen
+ * @date: 2018/11/18
+ * @Description: AvroSerializer（只能序列化IDL产生的类）
  */
 public class AvroSerializer implements ISerializer {
 
@@ -42,6 +44,5 @@ public class AvroSerializer implements ISerializer {
         }
 
     }
-
 
 }
