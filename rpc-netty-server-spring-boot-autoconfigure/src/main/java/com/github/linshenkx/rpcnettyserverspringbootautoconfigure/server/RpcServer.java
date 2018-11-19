@@ -1,21 +1,20 @@
 package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.server;
 
 import com.alibaba.fastjson.JSON;
+import com.github.linshenkx.rpcnettycommon.annotation.RpcService;
 import com.github.linshenkx.rpcnettycommon.bean.ServiceInfo;
 import com.github.linshenkx.rpcnettycommon.codec.decode.RemotingTransporterDecoder;
 import com.github.linshenkx.rpcnettycommon.codec.encode.RemotingTransporterEncoder;
 import com.github.linshenkx.rpcnettycommon.handler.RpcServerHandler;
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.annotation.RpcService;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.RpcServerProperties;
 import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.zookeeper.ZKServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,8 +26,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 /**
  * @version V1.0
@@ -41,7 +42,22 @@ import java.util.Map;
 @EnableConfigurationProperties(RpcServerProperties.class)
 public class RpcServer implements ApplicationContextAware, InitializingBean {
 
+    /**
+     * 存放 服务名称 与 服务实例 之间的映射关系
+     */
     private Map<String,Object> handlerMap=new HashMap<>();
+
+    /**
+     * 存放 服务名称 与 信号量 之间的映射关系
+     * 用于限制每个服务的工作线程数
+     */
+    private Map<String, Semaphore> serviceSemaphoreMap=new HashMap<>();
+
+    /**
+     * 存放 服务名称 与 服务信息 之间的映射关系
+     * 用于限制每个服务的工作线程数
+     */
+    private Map<String, RpcService> serviceRpcServiceMap=new HashMap<>();
 
     @Autowired
     private RpcServerProperties rpcProperties;
@@ -59,12 +75,14 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
 
         //获取带有@RpcService注解的类
         Map<String,Object> rpcServiceMap=applicationContext.getBeansWithAnnotation(RpcService.class);
-        //以@RpcService注解的value的类的类名为键将该标记类存入handlerMap
+        //以@RpcService注解的value的类的类名为键将该标记类存入handlerMap和serviceSemaphoreMap
         if(!CollectionUtils.isEmpty(rpcServiceMap)){
             for(Object object:rpcServiceMap.values()){
                 RpcService rpcService=object.getClass().getAnnotation(RpcService.class);
                 String serviceName=rpcService.value().getName();
                 handlerMap.put(serviceName,object);
+                serviceSemaphoreMap.put(serviceName,new Semaphore(rpcService.workerThreads()));
+                serviceRpcServiceMap.put(serviceName,rpcService);
             }
         }
 
@@ -87,6 +105,9 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             ServerBootstrap bootstrap=new ServerBootstrap();
             bootstrap.group(bossGroup,childGroup);
             bootstrap.channel(NioServerSocketChannel.class);
+            bootstrap.option(ChannelOption.SO_BACKLOG,1024)
+                    .childOption(ChannelOption.TCP_NODELAY,true)
+                    .handler(new LoggingHandler(LogLevel.INFO));
             bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel channel) throws Exception {
@@ -96,21 +117,16 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                     //编码RPC请求
                     pipeline.addFirst(new RemotingTransporterEncoder());
                     //处理RPC请求
-                    pipeline.addLast(new RpcServerHandler(handlerMap));
+                    pipeline.addLast(new RpcServerHandler(handlerMap,serviceSemaphoreMap,serviceRpcServiceMap));
                 }
             });
             //同步启动，RPC服务器启动完毕后才执行后续代码
             ChannelFuture future=bootstrap.bind(rpcProperties.getPort()).sync();
             log.info("server started,listening on {}",rpcProperties.getPort());
-            //注册RPC服务地址
-            //TODO:权重计算方式要改进
-            ServiceInfo serviceInfo=
-                    new ServiceInfo(InetAddress.getLocalHost().getHostAddress(),rpcProperties.getPort(),Runtime.getRuntime().availableProcessors());
-            String serviceInfoString= JSON.toJSONString(serviceInfo);
-            for(String interfaceName:handlerMap.keySet()){
-                rpcServiceRegistry.register(interfaceName,serviceInfoString);
-                log.info("register service:{}=>{}",interfaceName,serviceInfoString);
-            }
+
+            //启动后注册服务
+            registry();
+
             //释放资源
             future.channel().closeFuture().sync();
         }catch (Exception e){
@@ -121,5 +137,19 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             bossGroup.shutdownGracefully();
         }
 
+    }
+
+    private void registry() throws UnknownHostException {
+        //注册RPC服务地址
+        String hostAddress=InetAddress.getLocalHost().getHostAddress();
+        int port=rpcProperties.getPort();
+
+        for(String interfaceName:handlerMap.keySet()){
+            ServiceInfo serviceInfo=
+                    new ServiceInfo(hostAddress,port,serviceRpcServiceMap.get(interfaceName).weight(),serviceRpcServiceMap.get(interfaceName).workerThreads());
+            String serviceInfoString= JSON.toJSONString(serviceInfo);
+            rpcServiceRegistry.register(interfaceName,serviceInfoString);
+            log.info("register service:{}=>{}",interfaceName,serviceInfoString);
+        }
     }
 }

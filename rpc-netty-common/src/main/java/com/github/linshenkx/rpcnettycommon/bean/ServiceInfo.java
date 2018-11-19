@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ServiceInfo implements Cloneable , WeightGetAble {
+public class ServiceInfo implements WeightGetAble {
 
     private String host;
     private int port;
@@ -22,10 +22,16 @@ public class ServiceInfo implements Cloneable , WeightGetAble {
      * 权重信息
      */
     private int weight;
+    /**
+     * 最大工作线程数
+     */
+    private int workerThreads;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public ServiceInfo (ServiceInfo serviceInfo){
+        this.host = serviceInfo.host;
+        this.port = serviceInfo.port;
+        this.weight = serviceInfo.weight;
+        this.workerThreads = serviceInfo.workerThreads;
     }
 
     @Override

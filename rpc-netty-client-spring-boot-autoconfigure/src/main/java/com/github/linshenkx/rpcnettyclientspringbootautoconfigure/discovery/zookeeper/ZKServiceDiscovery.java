@@ -30,8 +30,6 @@ public class ZKServiceDiscovery {
   @Autowired
   private ZKProperties zkProperties;
 
-
-
   /**
    * 服务名和服务地址列表的Map
    */

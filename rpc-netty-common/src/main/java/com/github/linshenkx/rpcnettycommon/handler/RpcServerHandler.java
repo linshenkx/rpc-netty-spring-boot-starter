@@ -1,9 +1,10 @@
 package com.github.linshenkx.rpcnettycommon.handler;
 
 
-import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
+import com.github.linshenkx.rpcnettycommon.annotation.RpcService;
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
+import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -11,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 /**
  * @version V1.0
@@ -26,8 +28,22 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
    */
   private final Map<String, Object> handlerMap;
 
-  public RpcServerHandler(Map<String, Object> handlerMap) {
+  /**
+   * 存放 服务名称 与 信号量 之间的映射关系
+   * 用于限制每个服务的工作线程数
+   */
+  private final Map<String, Semaphore> serviceSemaphoreMap;
+
+  /**
+   * 存放 服务名称 与 服务信息 之间的映射关系
+   * 用于限制每个服务的工作线程数
+   */
+  private final Map<String, RpcService> serviceRpcServiceMap;
+
+  public RpcServerHandler(Map<String, Object> handlerMap,Map<String, Semaphore> serviceSemaphoreMap,Map<String, RpcService> serviceRpcServiceMap) {
     this.handlerMap = handlerMap;
+    this.serviceSemaphoreMap=serviceSemaphoreMap;
+    this.serviceRpcServiceMap=serviceRpcServiceMap;
   }
 
   @Override
@@ -37,15 +53,28 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
       response.setFlag(new RemotingTransporter.Flag(false,true,false,false,remotingTransporter.getFlag().getSerializeType()));
       response.setInvokeId(remotingTransporter.getInvokeId());
       RpcResponse rpcResponse=new RpcResponse();
-      try {
-      // 处理 RPC 请求成功
-      Object result= handle((RpcRequest)remotingTransporter.getBodyContent());
-      rpcResponse.setResult(result);
-    } catch (Exception e) {
-      // 处理 RPC 请求失败
-      rpcResponse.setException(e);
-      log.error("handle result failure", e);
-    }
+      RpcRequest rpcRequest=(RpcRequest)remotingTransporter.getBodyContent();
+    Semaphore semaphore = serviceSemaphoreMap.get(rpcRequest.getInterfaceName());
+    boolean acquire=false;
+        try {
+        // 处理 RPC 请求成功
+        log.info("进入限流");
+        acquire=semaphore.tryAcquire();
+        if(acquire){
+          Object result= handle(rpcRequest);
+          rpcResponse.setResult(result);
+        }
+
+      } catch (Exception e) {
+        // 处理 RPC 请求失败
+        rpcResponse.setException(e);
+        log.error("handle result failure", e);
+      } finally {
+        if(acquire){
+          semaphore.release();
+          log.info("释放信号量");
+        }
+      }
       response.setBodyContent(rpcResponse);
     channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
   }
@@ -58,7 +87,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
   }
 
   private Object handle(RpcRequest request) throws Exception {
-    log.info("handle begin");
+    log.info("开始执行handle");
     // 获取服务实例
     String serviceName = request.getInterfaceName();
     Object serviceBean = handlerMap.get(serviceName);
