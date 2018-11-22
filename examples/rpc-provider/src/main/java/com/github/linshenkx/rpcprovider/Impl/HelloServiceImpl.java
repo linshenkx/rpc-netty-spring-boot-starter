@@ -2,9 +2,9 @@ package com.github.linshenkx.rpcprovider.Impl;
 
 
 import com.github.linshenkx.rpclib.HelloService;
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.annotation.RpcService;
+import com.github.linshenkx.rpcnettycommon.annotation.RpcService;
 
-@RpcService(HelloService.class)
+@RpcService(value = HelloService.class,weight = 2,workerThreads = 1)
 public class HelloServiceImpl implements HelloService {
 
   @Override

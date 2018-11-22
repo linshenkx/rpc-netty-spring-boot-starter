@@ -1,5 +1,6 @@
-package com.github.linshenkx.rpcnettycommon.util;
+package com.github.linshenkx.rpcnettycommon.serialization.serializer.impl;
 
+import com.github.linshenkx.rpcnettycommon.serialization.serializer.ISerializer;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -13,21 +14,27 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @version V1.0
  * @author: lin_shen
- * @date: 2018/11/1
- * @Description: protobuf序列化工具(基于protostuff)
+ * @date: 2018/11/18
+ * @Description: protocolbuffer序列化工具(基于protostuff)
  */
+public class ProtoStuffSerializer implements ISerializer {
 
-public class ProtoSerializationUtil {
+    /**
+     * 用于缓存类对象与Schema的对应关系，避免重复创建Schema
+     */
+    private static final Map<Class<?>, Schema<?>> CACHED_SCHEMA = new ConcurrentHashMap<>();
 
-    private static final Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
-
-    private static final Objenesis objenesis = new ObjenesisStd(true);
+    /**
+     * 用于高效便捷地生成类实例，而无需构造方法支持
+     */
+    private static final Objenesis OBJENESIS = new ObjenesisStd(true);
 
     /**
      * 序列化（对象 -> 字节数组）
      */
+    @Override
     @SuppressWarnings("unchecked")
-    public static <T> byte[] serialize(T obj) {
+    public  <T> byte[] serialize(T obj) {
         Class<T> cls = (Class<T>) obj.getClass();
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try {
@@ -43,9 +50,10 @@ public class ProtoSerializationUtil {
     /**
      * 反序列化（字节数组 -> 对象）
      */
-    public static <T> T deserialize(byte[] data, Class<T> cls) {
+    @Override
+    public  <T> T deserialize(byte[] data, Class<T> cls) {
         try {
-            T message = objenesis.newInstance(cls);
+            T message = OBJENESIS.newInstance(cls);
             Schema<T> schema = getSchema(cls);
             ProtostuffIOUtil.mergeFrom(data, message, schema);
             return message;
@@ -55,11 +63,11 @@ public class ProtoSerializationUtil {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Schema<T> getSchema(Class<T> cls) {
-        Schema<T> schema = (Schema<T>) cachedSchema.get(cls);
+    private  <T> Schema<T> getSchema(Class<T> cls) {
+        Schema<T> schema = (Schema<T>) CACHED_SCHEMA.get(cls);
         if (schema == null) {
             schema = RuntimeSchema.createFrom(cls);
-            cachedSchema.put(cls, schema);
+            CACHED_SCHEMA.put(cls, schema);
         }
         return schema;
     }

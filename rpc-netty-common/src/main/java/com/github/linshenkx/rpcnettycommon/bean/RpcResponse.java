@@ -9,11 +9,8 @@ import lombok.Data;
  * @Description: TODO
  */
 @Data
-public class RpcResponse {
-    /**
-     * 对应请求的requestId
-     */
-    private String requestId;
+public class RpcResponse implements BodyContent {
+
     /**
      * 异常信息
      */

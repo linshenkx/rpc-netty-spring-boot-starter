@@ -1,4 +1,4 @@
-package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.annotation;
+package com.github.linshenkx.rpcnettycommon.annotation;
 
 import org.springframework.stereotype.Service;
 
@@ -20,4 +20,7 @@ import java.lang.annotation.Target;
 @Service
 public @interface RpcService {
     Class<?> value();
+    int weight() default 1;
+    int workerThreads() default 10;
+
 }
