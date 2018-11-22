@@ -48,12 +48,10 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
 
   @Override
   protected void channelRead0(ChannelHandlerContext channelHandlerContext, RemotingTransporter remotingTransporter) throws Exception {
-      log.info("channelRead0 begin");
-      RemotingTransporter response=RemotingTransporter.builder().build();
-      response.setFlag(new RemotingTransporter.Flag(false,true,false,false,remotingTransporter.getFlag().getSerializeType()));
-      response.setInvokeId(remotingTransporter.getInvokeId());
-      RpcResponse rpcResponse=new RpcResponse();
-      RpcRequest rpcRequest=(RpcRequest)remotingTransporter.getBodyContent();
+    log.info("channelRead0 begin");
+    remotingTransporter.setFlag(new RemotingTransporter.Flag(false,true,false,false,remotingTransporter.getFlag().getSerializeType()));
+    RpcResponse rpcResponse=new RpcResponse();
+    RpcRequest rpcRequest=(RpcRequest)remotingTransporter.getBodyContent();
     Semaphore semaphore = serviceSemaphoreMap.get(rpcRequest.getInterfaceName());
     boolean acquire=false;
         try {
@@ -75,8 +73,8 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
           log.info("释放信号量");
         }
       }
-      response.setBodyContent(rpcResponse);
-    channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    remotingTransporter.setBodyContent(rpcResponse);
+    channelHandlerContext.writeAndFlush(remotingTransporter).addListener(ChannelFutureListener.CLOSE);
   }
 
 
