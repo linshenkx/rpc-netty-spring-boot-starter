@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @Description: TODO
  */
 @Data
-@ConfigurationProperties(prefix = "zk1")
+@ConfigurationProperties(prefix = "zk")
 public class ZKProperties {
     private String address ;
     private int sessionTimeOut=5000;

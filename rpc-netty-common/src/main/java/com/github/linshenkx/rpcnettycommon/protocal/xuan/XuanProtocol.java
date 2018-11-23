@@ -16,7 +16,7 @@ public enum  XuanProtocol {
     /**
      * 协议头长度
      */
-    public static final int HEAD_LENGTH=16;
+    public static final int HEAD_LENGTH=15;
 
     /**
      * 魔数

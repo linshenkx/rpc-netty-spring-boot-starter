@@ -1,7 +1,7 @@
 package com.github.linshenkx.rpcnettyserverspringbootautoconfigure.registry.zookeeper;
 
 
-import com.github.linshenkx.rpcnettyserverspringbootautoconfigure.properties.ZKProperties;
+import com.github.linshenkx.rpcnettycommon.properties.ZKProperties;
 import lombok.extern.log4j.Log4j2;
 import org.I0Itec.zkclient.ZkClient;
 import org.springframework.beans.factory.annotation.Autowired;

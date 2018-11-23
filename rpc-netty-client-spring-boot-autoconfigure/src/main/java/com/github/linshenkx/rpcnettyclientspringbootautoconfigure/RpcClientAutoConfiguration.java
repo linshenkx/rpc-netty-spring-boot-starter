@@ -4,7 +4,7 @@ package com.github.linshenkx.rpcnettyclientspringbootautoconfigure;
 import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.client.RpcClient;
 import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.discovery.zookeeper.ZKServiceDiscovery;
 import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties.RpcClientProperties;
-import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties.ZKProperties;
+import com.github.linshenkx.rpcnettycommon.properties.ZKProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

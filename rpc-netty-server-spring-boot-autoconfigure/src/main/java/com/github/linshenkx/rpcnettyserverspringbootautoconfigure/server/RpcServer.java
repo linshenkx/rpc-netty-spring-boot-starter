@@ -55,7 +55,6 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
 
     /**
      * 存放 服务名称 与 服务信息 之间的映射关系
-     * 用于限制每个服务的工作线程数
      */
     private Map<String, RpcService> serviceRpcServiceMap=new HashMap<>();
 
@@ -117,7 +116,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                     //编码RPC请求
                     pipeline.addFirst(new RemotingTransporterEncoder());
                     //处理RPC请求
-                    pipeline.addLast(new RpcServerHandler(handlerMap,serviceSemaphoreMap,serviceRpcServiceMap));
+                    pipeline.addLast(new RpcServerHandler(handlerMap,serviceSemaphoreMap));
                 }
             });
             //同步启动，RPC服务器启动完毕后才执行后续代码

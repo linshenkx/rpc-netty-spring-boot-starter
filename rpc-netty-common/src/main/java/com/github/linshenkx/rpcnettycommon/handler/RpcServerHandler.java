@@ -1,7 +1,6 @@
 package com.github.linshenkx.rpcnettycommon.handler;
 
 
-import com.github.linshenkx.rpcnettycommon.annotation.RpcService;
 import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
 import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
@@ -34,16 +33,9 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
    */
   private final Map<String, Semaphore> serviceSemaphoreMap;
 
-  /**
-   * 存放 服务名称 与 服务信息 之间的映射关系
-   * 用于限制每个服务的工作线程数
-   */
-  private final Map<String, RpcService> serviceRpcServiceMap;
-
-  public RpcServerHandler(Map<String, Object> handlerMap,Map<String, Semaphore> serviceSemaphoreMap,Map<String, RpcService> serviceRpcServiceMap) {
+  public RpcServerHandler(Map<String, Object> handlerMap,Map<String, Semaphore> serviceSemaphoreMap) {
     this.handlerMap = handlerMap;
     this.serviceSemaphoreMap=serviceSemaphoreMap;
-    this.serviceRpcServiceMap=serviceRpcServiceMap;
   }
 
   @Override
