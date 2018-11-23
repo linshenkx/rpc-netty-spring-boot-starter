@@ -16,16 +16,16 @@ import java.util.concurrent.ConcurrentMap;
 @Log4j2
 public class RpcClientHandler extends SimpleChannelInboundHandler<RemotingTransporter> {
 
-    private ConcurrentMap<Long,RemotingTransporter> responseMap;
+    private ConcurrentMap<Long,RemotingTransporter> remotingTransporterMap;
 
-    public RpcClientHandler(ConcurrentMap<Long,RemotingTransporter> responseMap){
-        this.responseMap=responseMap;
+    public RpcClientHandler(ConcurrentMap<Long,RemotingTransporter> remotingTransporterMap){
+        this.remotingTransporterMap=remotingTransporterMap;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RemotingTransporter remotingTransporter) throws Exception {
         log.info("read a Response,invokeId: "+remotingTransporter.getInvokeId());
-        responseMap.put(remotingTransporter.getInvokeId(),remotingTransporter);
+        remotingTransporterMap.put(remotingTransporter.getInvokeId(),remotingTransporter);
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)

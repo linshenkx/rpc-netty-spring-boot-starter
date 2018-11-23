@@ -18,6 +18,11 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RemotingTransporter {
 
     /**
+     * 魔数
+     */
+    public static final short MAGIC=(short)0x9826;
+
+    /**
      * 用原子递增的方式来获取不重复invokeId
      */
     private static final AtomicLong invokeIdGnerator=new AtomicLong(0L);

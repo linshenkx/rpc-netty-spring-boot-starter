@@ -59,7 +59,7 @@ public class RpcClient {
     /**
      * 存放请求编号与响应对象的映射关系
      */
-    private ConcurrentMap<Long, RemotingTransporter> responseMap=new ConcurrentHashMap<>();
+    private ConcurrentMap<Long, RemotingTransporter> remotingTransporterMap=new ConcurrentHashMap<>();
 
 
     @SuppressWarnings("unchecked")
@@ -137,7 +137,7 @@ public class RpcClient {
                     ChannelPipeline pipeline=channel.pipeline();
                     pipeline.addLast(new RemotingTransporterDecoder())
                             .addFirst(new RemotingTransporterEncoder())
-                            .addLast(new RpcClientHandler(responseMap));
+                            .addLast(new RpcClientHandler(remotingTransporterMap));
                 }
             });
             ChannelFuture future=bootstrap.connect(host,port).sync();
@@ -148,14 +148,14 @@ public class RpcClient {
             channel.closeFuture().sync();
             log.info("send end");
             //获取RPC响应对象
-            return (RpcResponse) responseMap.get(remotingTransporter.getInvokeId()).getBodyContent();
+            return (RpcResponse) remotingTransporterMap.get(remotingTransporter.getInvokeId()).getBodyContent();
         }catch (Exception e){
             log.error("client exception",e);
             return null;
         }finally {
             group.shutdownGracefully();
             //移除请求编号和响应对象直接的映射关系
-            responseMap.remove(remotingTransporter.getInvokeId());
+            remotingTransporterMap.remove(remotingTransporter.getInvokeId());
         }
 
     }

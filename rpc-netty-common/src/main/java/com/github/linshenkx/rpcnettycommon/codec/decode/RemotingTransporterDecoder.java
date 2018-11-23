@@ -5,7 +5,6 @@ import com.github.linshenkx.rpcnettycommon.bean.RpcRequest;
 import com.github.linshenkx.rpcnettycommon.bean.RpcResponse;
 import com.github.linshenkx.rpcnettycommon.exception.remoting.RemotingContextException;
 import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
-import com.github.linshenkx.rpcnettycommon.protocal.xuan.XuanProtocol;
 import com.github.linshenkx.rpcnettycommon.serialization.SerializeTypeEnum;
 import com.github.linshenkx.rpcnettycommon.serialization.SerializerEngine;
 import io.netty.buffer.ByteBuf;
@@ -29,7 +28,7 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
     /**
      * 用于暂存解码RemotingTransporter信息,一个就够了
      */
-    private final RemotingTransporter remotingTransporter=RemotingTransporter.builder().build();
+    private static RemotingTransporter remotingTransporter=RemotingTransporter.builder().build();
 
     /**
      * 用于ReplayingDecoder的状态管理
@@ -91,9 +90,9 @@ public class RemotingTransporterDecoder extends ReplayingDecoder<RemotingTranspo
 
     private void checkMagic(short magic) throws RemotingContextException{
         //检查魔数
-        if (XuanProtocol.MAGIC != magic) {
+        if (RemotingTransporter.MAGIC != magic) {
             log.error("魔数不匹配");
-            throw new RemotingContextException("magic value is not equal "+XuanProtocol.MAGIC);
+            throw new RemotingContextException("magic value is not equal "+RemotingTransporter.MAGIC);
         }
     }
 

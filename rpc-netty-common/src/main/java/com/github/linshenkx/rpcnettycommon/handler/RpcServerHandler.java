@@ -94,7 +94,6 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RemotingTransp
     // 执行反射调用
     Method method = serviceClass.getMethod(methodName, parameterTypes);
     method.setAccessible(true);
-    log.info(parameters[0].toString());
     return method.invoke(serviceBean, parameters);
   }
 

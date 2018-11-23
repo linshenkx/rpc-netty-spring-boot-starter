@@ -1,7 +1,6 @@
 package com.github.linshenkx.rpcnettycommon.codec.encode;
 
 import com.github.linshenkx.rpcnettycommon.protocal.xuan.RemotingTransporter;
-import com.github.linshenkx.rpcnettycommon.protocal.xuan.XuanProtocol;
 import com.github.linshenkx.rpcnettycommon.serialization.SerializeTypeEnum;
 import com.github.linshenkx.rpcnettycommon.serialization.SerializerEngine;
 import io.netty.buffer.ByteBuf;
@@ -25,7 +24,7 @@ public class RemotingTransporterEncoder extends MessageToByteEncoder<RemotingTra
         //使用序列化引擎
         byte[] body= SerializerEngine.serialize(remotingTransporter.getBodyContent(), SerializeTypeEnum.queryByCode(remotingTransporter.getFlag().getSerializeType()));
         //magic+flag+invokeId+bodyLength+bodyContent
-        byteBuf.writeShort(XuanProtocol.MAGIC)
+        byteBuf.writeShort(RemotingTransporter.MAGIC)
                 .writeByte(remotingTransporter.getFlag().getThisByte())
                 .writeLong(remotingTransporter.getInvokeId())
                 .writeInt(body.length)
