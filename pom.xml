@@ -5,7 +5,7 @@
 
     <groupId>com.github.linshenkx</groupId>
     <artifactId>rpc-netty-spring-boot-starter</artifactId>
-    <version>2.0.1.RELEASE</version>
+    <version>2.0.2.RELEASE</version>
     <packaging>pom</packaging>
 
     <name>rpc-netty-spring-boot-starter</name>
@@ -25,20 +25,15 @@
         <java.version>1.8</java.version>
         <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
         <spring-cloud.version>Finchley.SR2</spring-cloud.version>
+
         <netty.version>4.1.31.Final</netty.version>
         <protostuff.version>1.5.9</protostuff.version>
-        <objenesis.version>3.0.1</objenesis.version>
         <zkclient.version>0.11</zkclient.version>
         <fastjson.version>1.2.46</fastjson.version>
-        <jackson.version>2.9.6</jackson.version>
-        <commons-lang3.version>3.3.1</commons-lang3.version>
-        <joda-time.version>2.3</joda-time.version>
         <avro.version>1.8.1</avro.version>
-        <hessian.version>4.0.38</hessian.version>
         <jboss-marshalling.version>2.0.0.Beta2</jboss-marshalling.version>
         <protostuff-api.version>1.5.9</protostuff-api.version>
         <libthrift.version>0.9.3</libthrift.version>
-        <xstream.version>1.4.9</xstream.version>
 
         <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
@@ -96,6 +91,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>io.spring.platform</groupId>
+                <artifactId>platform-bom</artifactId>
+                <version>Cairo-SR5</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
@@ -129,11 +131,7 @@
                 <artifactId>rpc-netty-client-spring-boot-autoconfigure</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.protostuff</groupId>
                 <artifactId>protostuff-core</artifactId>
@@ -143,11 +141,6 @@
                 <groupId>io.protostuff</groupId>
                 <artifactId>protostuff-runtime</artifactId>
                 <version>${protostuff.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.objenesis</groupId>
-                <artifactId>objenesis</artifactId>
-                <version>${objenesis.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.101tec</groupId>
@@ -166,36 +159,9 @@
                 <version>${fastjson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>${joda-time.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro</artifactId>
                 <version>${avro.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.caucho</groupId>
-                <artifactId>hessian</artifactId>
-                <version>${hessian.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.marshalling</groupId>
@@ -211,11 +177,6 @@
                 <groupId>org.apache.thrift</groupId>
                 <artifactId>libthrift</artifactId>
                 <version>${libthrift.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.thoughtworks.xstream</groupId>
-                <artifactId>xstream</artifactId>
-                <version>${xstream.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

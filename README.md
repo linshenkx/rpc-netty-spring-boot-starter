@@ -41,7 +41,7 @@
             <dependency>
                 <groupId>com.github.linshenkx</groupId>
                 <artifactId>rpc-netty-server-spring-boot-starter</artifactId>
-                <version>2.0.1.RELEASE</version>
+                <version>2.0.2.RELEASE</version>
             </dependency>
     ```
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.github.linshenkx</groupId>
             <artifactId>rpc-netty-client-spring-boot-starter</artifactId>
-            <version>2.0.1.RELEASE</version>
+            <version>2.0.2.RELEASE</version>
         </dependency>
     ``` 
     
