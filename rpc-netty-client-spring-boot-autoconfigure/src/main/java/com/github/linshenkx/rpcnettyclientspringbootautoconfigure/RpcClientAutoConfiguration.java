@@ -1,6 +1,7 @@
 package com.github.linshenkx.rpcnettyclientspringbootautoconfigure;
 
 
+import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.processor.RpcClientBeanPostProcessor;
 import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.client.RpcClient;
 import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.discovery.zookeeper.ZKServiceDiscovery;
 import com.github.linshenkx.rpcnettyclientspringbootautoconfigure.properties.RpcClientProperties;
@@ -43,5 +44,10 @@ public class RpcClientAutoConfiguration {
     @Bean
     public RpcClient rpcClient(){
         return new RpcClient();
+    }
+
+    @Bean
+    public RpcClientBeanPostProcessor rpcClientBeanPostProcessor(){
+        return new RpcClientBeanPostProcessor();
     }
 }
