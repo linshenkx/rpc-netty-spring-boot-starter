@@ -15,6 +15,7 @@
 
 2.0版本针对性能做了优化，并添加一些新功能：
 
+* 增加@RpcReference注解，自动注入服务实现
 * 增加负载均衡路由策略引擎（含随机、轮询、哈希等及其带权形式）
 * 增加序列化引擎（支持 JDK默认、Hessian、Json、Protostuff、Xml、Avro、ProtocolBuffer、Thrift等序列化方式）
 * 服务提供者提供服务时可注解参数指定最大工作线程数来限流
@@ -101,17 +102,17 @@
     }
     ```
 
-5. 服务消费者使用@Autowired注入 RpcClient，执行rpcClient.create(Service.class)即可生成Service的代理类
+5. 服务消费者使用@RpcReference标记服务接口，即可注入服务实现类代理
     
     ```java
     @RestController
     public class HelloController {
-        @Autowired
-        private RpcClient rpcClient;
+    
+        @RpcReference
+        private HelloService helloService;
     
         @GetMapping("/hello")
-        public String sayHello(@RequestParam(defaultValue = "lin") String name){
-            HelloService helloService= rpcClient.create(HelloService.class);
+        public String sayHello(@RequestParam(defaultValue = "lin") String name){   
             return helloService.say(name);
         }
     
